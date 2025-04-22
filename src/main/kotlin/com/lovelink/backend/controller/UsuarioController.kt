@@ -48,4 +48,9 @@ class UsuarioController(
             ?: ResponseEntity.notFound().build()
     }
 
+    @GetMapping("/cuenta/{idCuenta}")
+    fun obtenerUsuarioPorCuenta(@PathVariable idCuenta: Long): ResponseEntity<Usuario> {
+        val usuario = usuarioRepository.findByCuentaId(idCuenta)
+        return ResponseEntity.ok(usuario)
+    }
 }
