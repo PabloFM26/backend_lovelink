@@ -28,11 +28,15 @@ class CuentaController(
             ResponseEntity.status(401).body(mapOf("error" to "Credenciales incorrectas"))
         }
     }
-    // CuentaController.kt
-    @GetMapping("/ultima")
-    fun obtenerUltimaCuenta(): ResponseEntity<Cuenta?> {
-        val cuenta = cuentaRepository.findTopByOrderByIdDesc()
-        return ResponseEntity.ok(cuenta)
+
+    @GetMapping("/{id}")
+    fun getCuentaById(@PathVariable id: Long): ResponseEntity<Cuenta> {
+        val cuenta = cuentaRepository.findById(id)
+        return if (cuenta.isPresent) {
+            ResponseEntity.ok(cuenta.get())
+        } else {
+            ResponseEntity.notFound().build()
+        }
     }
 
 

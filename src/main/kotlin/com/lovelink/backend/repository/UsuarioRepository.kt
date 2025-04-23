@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface UsuarioRepository : JpaRepository<Usuario, Long> {
-    fun findTopByOrderByIdDesc(): Usuario?
     @Query("SELECT u FROM Usuario u WHERE u.id_cuenta = :idCuenta")
     fun findByCuentaId(@Param("idCuenta") idCuenta: Long): Usuario
 }

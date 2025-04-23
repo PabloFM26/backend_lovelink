@@ -2,6 +2,7 @@ package com.lovelink.backend.controller
 
 import com.lovelink.backend.entity.Usuario
 import com.lovelink.backend.repository.UsuarioRepository
+import jakarta.transaction.Transactional
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -12,9 +13,19 @@ class UsuarioController(
     private val usuarioRepository: UsuarioRepository
 ) {
     @PostMapping
+    @Transactional
     fun crearUsuario(@RequestBody usuario: Usuario): ResponseEntity<Usuario> {
-        return ResponseEntity.ok(usuarioRepository.save(usuario))
+        val usuarioGuardado = usuarioRepository.save(usuario)
+        usuarioRepository.flush()
+
+        val confirmado = usuarioRepository.findById(usuarioGuardado.id)
+        if (confirmado.isEmpty) {
+            throw RuntimeException("El usuario aún no está disponible.")
+        }
+        return ResponseEntity.ok(usuarioGuardado)
     }
+
+
 
     @PutMapping("/{id}")
     fun actualizarUsuario(
@@ -41,16 +52,19 @@ class UsuarioController(
         }
     }
 
-    @GetMapping("/ultimo")
-    fun obtenerUltimoUsuario(): ResponseEntity<Usuario> {
-        val usuario = usuarioRepository.findTopByOrderByIdDesc()
-        return usuario?.let { ResponseEntity.ok(it) }
-            ?: ResponseEntity.notFound().build()
-    }
-
     @GetMapping("/cuenta/{idCuenta}")
     fun obtenerUsuarioPorCuenta(@PathVariable idCuenta: Long): ResponseEntity<Usuario> {
         val usuario = usuarioRepository.findByCuentaId(idCuenta)
         return ResponseEntity.ok(usuario)
+    }
+
+    @GetMapping("/{id}")
+    fun getUsuarioById(@PathVariable id: Long): ResponseEntity<Usuario?> {
+        val usuario = usuarioRepository.findById(id)
+        return if (usuario.isPresent) {
+            ResponseEntity.ok(usuario.get())
+        } else {
+            ResponseEntity.notFound().build()
+        }
     }
 }

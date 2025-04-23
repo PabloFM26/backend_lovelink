@@ -1,5 +1,6 @@
 package com.lovelink.backend.entity
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.persistence.*
 
 @Entity
@@ -9,8 +10,10 @@ data class ImagenesUsuario(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id_imagen: Long = 0,
 
-    @Column(nullable = false)
-    val id_usuario: Long,
+    @Column(name = "id_usuario")
+    @JsonProperty("id_usuario")
+    var idUsuario: Int,
+
 
     val imagen1: String?,
     val imagen2: String?,
