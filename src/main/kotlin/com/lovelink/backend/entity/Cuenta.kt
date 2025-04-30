@@ -10,6 +10,6 @@ data class Cuenta(
     val id: Long = 0,
 
     val telefono: String,
-    val email: String,
-    val password: String
+    var email: String,
+    var password: String
 )

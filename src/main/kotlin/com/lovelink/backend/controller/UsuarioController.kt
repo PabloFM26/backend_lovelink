@@ -24,33 +24,31 @@ class UsuarioController(
         }
         return ResponseEntity.ok(usuarioGuardado)
     }
-
-
-
-    @PutMapping("/{id}")
+    @PutMapping("/actualizar/{id}")
     fun actualizarUsuario(
         @PathVariable id: Long,
-        @RequestBody usuarioActualizado: Usuario
+        @RequestBody usuarioActualizado: Map<String, Any?>
     ): ResponseEntity<Usuario> {
-        val usuario = usuarioRepository.findById(id)
-        return if (usuario.isPresent) {
-            val existente = usuario.get()
-            val actualizado = existente.copy(
-                nombre = usuarioActualizado.nombre,
-                apellidos = usuarioActualizado.apellidos,
-                genero = usuarioActualizado.genero,
-                localidad = usuarioActualizado.localidad,
-                edad = usuarioActualizado.edad,
-                orientacionSexual = usuarioActualizado.orientacionSexual,
-                signoZodiaco = usuarioActualizado.signoZodiaco,
-                intencion = usuarioActualizado.intencion,
-                altura = usuarioActualizado.altura
-            )
-            ResponseEntity.ok(usuarioRepository.save(actualizado))
+        val usuarioExistente = usuarioRepository.findById(id)
+        return if (usuarioExistente.isPresent) {
+            val usuario = usuarioExistente.get()
+
+            usuario.nombre = usuarioActualizado["nombre"] as? String ?: usuario.nombre
+            usuario.apellidos = usuarioActualizado["apellidos"] as? String ?: usuario.apellidos
+            usuario.genero = usuarioActualizado["genero"] as? String ?: usuario.genero
+            usuario.localidad = usuarioActualizado["localidad"] as? String ?: usuario.localidad
+            usuario.orientacionSexual = usuarioActualizado["orientacionSexual"] as? String ?: usuario.orientacionSexual
+            usuario.signoZodiaco = usuarioActualizado["signoZodiaco"] as? String ?: usuario.signoZodiaco
+            usuario.intencion = usuarioActualizado["intencion"] as? String ?: usuario.intencion
+            usuario.altura = (usuarioActualizado["altura"] as? Double)?.toInt() ?: usuario.altura
+
+            usuarioRepository.save(usuario)
+            ResponseEntity.ok(usuario)
         } else {
             ResponseEntity.notFound().build()
         }
     }
+
 
     @GetMapping("/cuenta/{idCuenta}")
     fun obtenerUsuarioPorCuenta(@PathVariable idCuenta: Long): ResponseEntity<Usuario> {
@@ -67,4 +65,11 @@ class UsuarioController(
             ResponseEntity.notFound().build()
         }
     }
+
+    @GetMapping
+    fun obtenerTodosLosUsuarios(): ResponseEntity<List<Usuario>> {
+        val usuarios = usuarioRepository.findAll()
+        return ResponseEntity.ok(usuarios)
+    }
+
 }

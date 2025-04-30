@@ -39,6 +39,45 @@ class CuentaController(
         }
     }
 
+    @PutMapping("/cambiar-correo/{id}")
+    fun actualizarCorreo(
+        @PathVariable id: Long,
+        @RequestBody correoActualizado: Map<String, String>
+    ): ResponseEntity<Cuenta> {
+        val cuentaExistente = cuentaRepository.findById(id)
+        return if (cuentaExistente.isPresent) {
+            val cuenta = cuentaExistente.get()
+            cuenta.email = correoActualizado["email"] ?: cuenta.email
+            cuentaRepository.save(cuenta)
+            ResponseEntity.ok(cuenta)
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+    @PutMapping("/cambiar-password/{id}")
+    fun actualizarContrasena(
+        @PathVariable id: Long,
+        @RequestBody passwordActualizado: Map<String, String>
+    ): ResponseEntity<Cuenta> {
+        val cuentaExistente = cuentaRepository.findById(id)
+        return if (cuentaExistente.isPresent) {
+            val cuenta = cuentaExistente.get()
+            cuenta.password = passwordActualizado["password"] ?: cuenta.password
+            cuentaRepository.save(cuenta)
+            ResponseEntity.ok(cuenta)
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
+    @DeleteMapping("/{id}")
+    fun eliminarCuenta(@PathVariable id: Long): ResponseEntity<Void> {
+        if (cuentaRepository.existsById(id)) {
+            cuentaRepository.deleteById(id)
+            return ResponseEntity.noContent().build()
+        }
+        return ResponseEntity.notFound().build()
+    }
 
 
 }

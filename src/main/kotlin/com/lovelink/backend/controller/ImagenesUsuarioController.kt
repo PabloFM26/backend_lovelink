@@ -34,4 +34,23 @@ class ImagenesUsuarioController(
             ResponseEntity.notFound().build()
         }
     }
+
+    @PutMapping("/{id}")
+    fun actualizarImagenes(@PathVariable id: Long, @RequestBody imagenesActualizadas: ImagenesUsuario): ResponseEntity<ImagenesUsuario> {
+        val imagenesExistente = imagenesUsuarioRepository.findById(id)
+        return if (imagenesExistente.isPresent) {
+            val imagenes = imagenesExistente.get()
+            imagenes.imagen1 = imagenesActualizadas.imagen1
+            imagenes.imagen2 = imagenesActualizadas.imagen2
+            imagenes.imagen3 = imagenesActualizadas.imagen3
+            imagenes.imagen4 = imagenesActualizadas.imagen4
+            imagenes.imagen5 = imagenesActualizadas.imagen5
+            imagenes.imagen6 = imagenesActualizadas.imagen6
+            imagenesUsuarioRepository.save(imagenes)
+            ResponseEntity.ok(imagenes)
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
+
 }
