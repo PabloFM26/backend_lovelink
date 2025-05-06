@@ -79,5 +79,16 @@ class CuentaController(
         return ResponseEntity.notFound().build()
     }
 
+    @GetMapping("/email/{email}")
+    fun obtenerCuentaPorEmail(@PathVariable email: String): ResponseEntity<Cuenta> {
+        val cuenta = cuentaRepository.findByEmail(email)
+        return if (cuenta != null) {
+            ResponseEntity.ok(cuenta)
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+
 
 }
